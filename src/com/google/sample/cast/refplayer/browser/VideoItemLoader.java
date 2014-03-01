@@ -37,6 +37,7 @@ public class VideoItemLoader extends AsyncTaskLoader<List<MediaInfo>> {
     @Override
     public List<MediaInfo> loadInBackground() {
         try {
+        	Log.i(TAG, "Fetching json from " + mUrl);
             return VideoProvider.buildMedia(mUrl);
         } catch (Exception e) {
             Log.e(TAG, "Failed to fetch media data", e);

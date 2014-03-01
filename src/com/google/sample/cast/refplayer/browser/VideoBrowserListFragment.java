@@ -35,8 +35,8 @@ public class VideoBrowserListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<List<MediaInfo>> {
 
     private static final String CATALOG_URL =
-            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/" +
-                    "videos-enhanced-b.json";
+            //"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/" +
+    		"http://www.daveroda.com/api/";
     private VideoListAdapter mAdapter;
 
     /*
