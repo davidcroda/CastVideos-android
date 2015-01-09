@@ -195,5 +195,4 @@ public class VideoBrowserListFragment extends ListFragment implements
 
         return true;
     }
-
 }

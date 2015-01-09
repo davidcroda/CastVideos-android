@@ -126,7 +126,7 @@ public class Utils {
      * <ul>
      * <li><code>R.string.connection_lost_retry</code></li>
      * <li><code>R.string.connection_lost</code></li>
-     * <li><code>R.string.failed_to_perfrom_action</code></li>
+     * <li><code>R.string.failed_to_perform_action</code></li>
      * </ul>
      *
      * @param context
@@ -145,10 +145,10 @@ public class Utils {
                 e instanceof IOException ||
                 e instanceof CastException) {
             // something more serious happened
-            resourceId = R.string.failed_to_perfrom_action;
+            resourceId = R.string.failed_to_perform_action;
         } else {
             // well, who knows!
-            resourceId = R.string.failed_to_perfrom_action;
+            resourceId = R.string.failed_to_perform_action;
         }
         if (resourceId > 0) {
             com.google.sample.cast.refplayer.utils.Utils.showOopsDialog(context, resourceId);
@@ -171,16 +171,6 @@ public class Utils {
             // do nothing
         }
         return versionString;
-    }
-
-    /**
-     * Shows a (long) toast
-     *
-     * @param context
-     * @param msg
-     */
-    public static void showToast(Context context, String msg) {
-        Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
     }
 
     /**

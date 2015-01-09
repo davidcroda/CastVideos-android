@@ -73,9 +73,10 @@ public class VideoListAdapter extends ArrayAdapter<MediaInfo> {
         }
 
         AQuery aq = new AQuery(convertView);
-        Log.d(TAG, mm.getImages().get(0).getUrl().toString());
-        aq.id(holder.imgView).width(110).image(mm.getImages().get(0).getUrl().toString(),
-                true, true, 0, R.drawable.default_video, null, 0, mAspectRatio);
+        if (!mm.getImages().isEmpty()) {
+            aq.id(holder.imgView).width(110).image(mm.getImages().get(0).getUrl().toString(),
+                    true, true, 0, R.drawable.default_video, null, 0, mAspectRatio);
+        }
         aq.id(holder.titleView).text(mm.getString(MediaMetadata.KEY_TITLE));
         aq.id(holder.descrView).text(mm.getString(MediaMetadata.KEY_SUBTITLE));
 

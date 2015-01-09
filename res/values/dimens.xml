@@ -4,4 +4,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
+    <!-- ShowCaseView -->
+    <dimen name="showcase_radius">47dp</dimen>
+
 </resources>

@@ -33,7 +33,6 @@ import android.preference.PreferenceManager;
 public class CastPreference extends PreferenceActivity
         implements OnSharedPreferenceChangeListener {
 
-    public static final String APP_DESTRUCTION_KEY = "application_destruction";
     public static final String FTU_SHOWN_KEY = "ftu_shown";
     public static final String VOLUME_SELCTION_KEY = "volume_target";
     public static final String TERMINATION_POLICY_KEY = "termination_policy";
@@ -50,10 +49,9 @@ public class CastPreference extends PreferenceActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.application_preference);
-        getPreferenceScreen().getSharedPreferences().
-                registerOnSharedPreferenceChangeListener(this);
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        mCastManager = CastApplication.getCastManager(this);
+        mPrefs.registerOnSharedPreferenceChangeListener(this);
+        mCastManager = CastApplication.getCastManager();
 
         // -- Termination Policy -------------------//
         mTerminationListPreference = (ListPreference) getPreferenceScreen().findPreference(
@@ -70,13 +68,10 @@ public class CastPreference extends PreferenceActivity
         mVolumeListPreference.setSummary(volSummary);
 
         EditTextPreference versionPref = (EditTextPreference) findPreference("app_version");
-        versionPref.setTitle(getString(R.string.version, Utils.getAppVersionName(this)));
+        versionPref.setTitle(getString(R.string.version, Utils.getAppVersionName(this),
+                getString(R.string.ccl_version)));
     }
 
-    public static boolean isDestroyAppOnDisconnect(Context ctx) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(ctx);
-        return sharedPref.getBoolean(APP_DESTRUCTION_KEY, false);
-    }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
@@ -113,6 +108,7 @@ public class CastPreference extends PreferenceActivity
     protected void onResume() {
         if (null != mCastManager) {
             mCastManager.incrementUiCounter();
+            mCastManager.updateCaptionSummary("caption", getPreferenceScreen());
         }
         super.onResume();
     }
