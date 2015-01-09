@@ -22,6 +22,7 @@ import com.google.android.gms.cast.MediaMetadata;
 import com.google.sample.cast.refplayer.R;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,12 +37,12 @@ import java.util.List;
  */
 public class VideoListAdapter extends ArrayAdapter<MediaInfo> {
 
+    private static final String TAG = "VideoListAdapter";
     private final Context mContext;
     private final float mAspectRatio = 9f / 16f;
 
     /**
      * @param context
-     * @param resource
      */
     public VideoListAdapter(Context context) {
         super(context, 0);
@@ -72,6 +73,7 @@ public class VideoListAdapter extends ArrayAdapter<MediaInfo> {
         }
 
         AQuery aq = new AQuery(convertView);
+        Log.d(TAG, mm.getImages().get(0).getUrl().toString());
         aq.id(holder.imgView).width(110).image(mm.getImages().get(0).getUrl().toString(),
                 true, true, 0, R.drawable.default_video, null, 0, mAspectRatio);
         aq.id(holder.titleView).text(mm.getString(MediaMetadata.KEY_TITLE));

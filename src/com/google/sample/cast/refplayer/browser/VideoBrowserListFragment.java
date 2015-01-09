@@ -16,28 +16,80 @@
 
 package com.google.sample.cast.refplayer.browser;
 
-import com.google.android.gms.cast.MediaInfo;
-import com.google.sample.cast.refplayer.R;
-import com.google.sample.cast.refplayer.mediaplayer.LocalPlayerActivity;
-import com.google.sample.castcompanionlibrary.utils.Utils;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 
+import com.google.android.gms.cast.MediaInfo;
+import com.google.android.gms.cast.MediaMetadata;
+import com.google.sample.cast.refplayer.R;
+import com.google.sample.cast.refplayer.mediaplayer.LocalPlayerActivity;
+import com.google.sample.castcompanionlibrary.utils.Utils;
+
 import java.util.List;
+
+import eu.erikw.PullToRefreshListView;
 
 public class VideoBrowserListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<List<MediaInfo>> {
 
+    private static final String TAG = "VideoBrowserListFragment";
     private static final String CATALOG_URL =
             //"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/" +
-    		"http://www.daveroda.com/api/";
+    		"http://www.daveroda.com/api/video";
+    private static final int ID_PLAY = 1;
+    private static final int ID_DELETE = 2;
     private VideoListAdapter mAdapter;
+    private PullToRefreshListView mListView;
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        ViewGroup viewGroup = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
+
+        View lvOld = viewGroup.findViewById(android.R.id.list);
+
+        mListView = new PullToRefreshListView(getActivity());
+        mListView.setId(android.R.id.list);
+        mListView.setLayoutParams(new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mListView.setDrawSelectorOnTop(false);
+        mListView.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list contents
+
+                // ...
+
+                // Make sure you call listView.onRefreshComplete()
+                // when the loading is done. This can be done from here or any
+                // other place, like on a broadcast receive from your loading
+                // service or the onPostExecute of your AsyncTask.
+                getLoaderManager().restartLoader(0, null, VideoBrowserListFragment.this);
+            }
+        });
+
+        FrameLayout parent = (FrameLayout) lvOld.getParent();
+
+        parent.removeView(lvOld);
+        lvOld.setVisibility(View.GONE);
+
+        parent.addView(mListView, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        return viewGroup;
+    }
 
     /*
      * (non-Javadoc)
@@ -46,12 +98,25 @@ public class VideoBrowserListFragment extends ListFragment implements
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         getListView().setFastScrollEnabled(true);
+        registerForContextMenu(getListView());
         mAdapter = new VideoListAdapter(getActivity());
         setEmptyText(getString(R.string.no_video_found));
         setListAdapter(mAdapter);
         setListShown(false);
         getLoaderManager().initLoader(0, null, this);
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * @see android.support.v4.app.LoaderManager.LoaderCallbacks#onCreateLoader(int,
+     * android.os.Bundle)
+     */
+    @Override
+    public Loader<List<MediaInfo>> onCreateLoader(int arg0, Bundle arg1) {
+        return new VideoItemLoader(getActivity(), CATALOG_URL);
     }
 
     /*
@@ -62,6 +127,7 @@ public class VideoBrowserListFragment extends ListFragment implements
     @Override
     public void onLoadFinished(Loader<List<MediaInfo>> arg0, List<MediaInfo> data) {
         mAdapter.setData(data);
+        mListView.onRefreshComplete();
         if (isResumed()) {
             setListShown(true);
         } else {
@@ -92,16 +158,6 @@ public class VideoBrowserListFragment extends ListFragment implements
         getActivity().startActivity(intent);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see android.support.v4.app.LoaderManager.LoaderCallbacks#onCreateLoader(int,
-     * android.os.Bundle)
-     */
-    @Override
-    public Loader<List<MediaInfo>> onCreateLoader(int arg0, Bundle arg1) {
-        return new VideoItemLoader(getActivity(), CATALOG_URL);
-    }
-
     public static VideoBrowserListFragment newInstance() {
         VideoBrowserListFragment f = new VideoBrowserListFragment();
         Bundle b = new Bundle();
@@ -113,6 +169,31 @@ public class VideoBrowserListFragment extends ListFragment implements
         VideoBrowserListFragment f = new VideoBrowserListFragment();
         f.setArguments(b);
         return f;
+    }
+
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        menu.add(0, ID_PLAY, 0, "Play");
+        menu.add(0, ID_DELETE, 1, "Delete");
+        super.onCreateContextMenu(menu, v, menuInfo);
+    }
+
+    public boolean onContextItemSelected(MenuItem item) {
+        super.onContextItemSelected(item);
+
+        MediaMetadata mm = mAdapter.getItem(item.getItemId()).getMetadata();
+
+        String id = mm.getString(VideoProvider.KEY_ID);
+        String action = "";
+
+        if(item.getItemId() == ID_PLAY) {
+            action = "PLAY";
+        } else if(item.getItemId() == ID_DELETE) {
+            action = "DELETE";
+        }
+
+        Log.d(TAG, "Received Action: " + action + " for Video ID: " + id);
+
+        return true;
     }
 
 }
