@@ -44,8 +44,8 @@ public class VideoProvider {
     private static final String TAG_NAME = "name";
     private static String TAG_MEDIA = "video";
     private static String TAG_SOURCES = "sources";
-    private static String THUMB_PREFIX_URL =
-            "http://www.daveroda.com";
+    public static String BASE_URL =
+            "http://daveroda.com";
     private static String TAG_THUMB = "thumbnailSmall";
     private static String TAG_IMG_780_1200 = "thumbnailLarge";
     private static String TAG_SUBTITLE = "subtitle";
@@ -121,46 +121,45 @@ public class VideoProvider {
 //        }
         mediaList = new ArrayList<MediaInfo>();
         JSONObject jsonObj = new VideoProvider().parseUrl(url);
-        JSONArray categories = jsonObj.getJSONArray(TAG_CATEGORIES);
-        if (null != categories) {
-            for (int i = 0; i < categories.length(); i++) {
-                JSONObject category = categories.getJSONObject(i);
-                category.getString(TAG_NAME);
-                JSONArray videos = category.getJSONArray(getJsonMediaTag());
-                if (null != videos) {
-                    for (int j = 0; j < videos.length(); j++) {
-                        JSONObject video = videos.getJSONObject(j);
-                        String subTitle = video.getString(TAG_SUBTITLE);
-                        JSONArray videoUrls = video.getJSONArray(TAG_SOURCES);
-                        if (null == videoUrls || videoUrls.length() == 0) {
-                            continue;
-                        }
-                        String videoUrl = videoUrls.getString(0);
-                        String imageurl = getThumbPrefix() + video.getString(TAG_THUMB);
-                        String bigImageurl = getThumbPrefix() + video.getString(TAG_IMG_780_1200);
-                        String title = video.getString(TAG_TITLE);
-                        List<MediaTrack> tracks = null;
-                        if (video.has(TAG_TRACKS)) {
-                            JSONArray tracksArray = video.getJSONArray(TAG_TRACKS);
-                            if (tracksArray != null) {
-                                tracks = new ArrayList<MediaTrack>();
-                                for (int k = 0; k < tracksArray.length(); k++) {
-                                    JSONObject track = tracksArray.getJSONObject(k);
-                                    tracks.add(buildTrack(track.getLong(TAG_TRACK_ID),
-                                            track.getString(TAG_TRACK_TYPE),
-                                            track.getString(TAG_TRACK_SUBTYPE),
-                                            track.getString(TAG_TRACK_CONTENT_ID),
-                                            track.getString(TAG_TRACK_NAME),
-                                            track.getString(TAG_TRACK_LANGUAGE)
-                                    ));
-                                }
-                            }
-                        }
 
-                        mediaList.add(buildMediaInfo(title, subTitle, videoUrl, imageurl,
-                                bigImageurl, tracks));
+        JSONArray videos = jsonObj.getJSONArray(getJsonMediaTag());
+        if (null != videos) {
+            for (int j = 0; j < videos.length(); j++) {
+                JSONObject video = videos.getJSONObject(j);
+                String subTitle = "";
+                try {
+                    subTitle = video.getString(TAG_SUBTITLE);
+                } catch (JSONException e) {
+                    //
+                }
+                JSONArray videoUrls = video.getJSONArray(TAG_SOURCES);
+                if (null == videoUrls || videoUrls.length() == 0) {
+                    continue;
+                }
+                String videoUrl = videoUrls.getString(0);
+                String imageurl = getThumbPrefix() + video.getString(TAG_THUMB);
+                String bigImageurl = getThumbPrefix() + video.getString(TAG_IMG_780_1200);
+                String title = video.getString(TAG_TITLE);
+                List<MediaTrack> tracks = null;
+                if (video.has(TAG_TRACKS)) {
+                    JSONArray tracksArray = video.getJSONArray(TAG_TRACKS);
+                    if (tracksArray != null) {
+                        tracks = new ArrayList<MediaTrack>();
+                        for (int k = 0; k < tracksArray.length(); k++) {
+                            JSONObject track = tracksArray.getJSONObject(k);
+                            tracks.add(buildTrack(track.getLong(TAG_TRACK_ID),
+                                    track.getString(TAG_TRACK_TYPE),
+                                    track.getString(TAG_TRACK_SUBTYPE),
+                                    track.getString(TAG_TRACK_CONTENT_ID),
+                                    track.getString(TAG_TRACK_NAME),
+                                    track.getString(TAG_TRACK_LANGUAGE)
+                            ));
+                        }
                     }
                 }
+
+                mediaList.add(buildMediaInfo(title, subTitle, videoUrl, imageurl,
+                        bigImageurl, tracks));
             }
         }
         return mediaList;
@@ -221,7 +220,7 @@ public class VideoProvider {
     }
 
     private static String getThumbPrefix() {
-        return THUMB_PREFIX_URL;
+        return BASE_URL;
     }
 
 }

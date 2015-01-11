@@ -46,7 +46,7 @@ public class VideoBrowserListFragment extends ListFragment implements
     private static final String TAG = "VideoBrowserListFragment";
     private static final String CATALOG_URL =
             //"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/" +
-    		"http://www.daveroda.com/api/video";
+    		VideoProvider.BASE_URL + "/api/video";
     private static final int ID_PLAY = 1;
     private static final int ID_DELETE = 2;
     private VideoListAdapter mAdapter;
