@@ -95,9 +95,19 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_toLeftOf="@+id/endText"
-                android:layout_toRightOf="@+id/startText" />
+                android:layout_toRightOf="@+id/startText"
+                android:indeterminate="false" />
         </RelativeLayout>
     </RelativeLayout>
+
+    <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:minHeight="?attr/actionBarSize"
+            android:background="@drawable/ab_transparent_democastoverlay"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <TextView
         android:id="@+id/textView1"
@@ -111,39 +121,39 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="fill_parent"
+    <NumberPicker
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_alignRight="@+id/textView1"
         android:layout_below="@+id/textView1"
-        android:layout_marginTop="2dp"
-        android:lines="1"
-        android:textSize="15sp" />
+        android:id="@+id/nmbMinutes"
+        android:layout_centerHorizontal="true"
+        />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="fill_parent"
+    <NumberPicker
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/miniController1"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_alignRight="@+id/textView1"
-        android:layout_below="@+id/textView3"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="10dp"
-        android:fontFamily="sans-serif-light"
-        android:lines="50"
-        android:scrollbars="vertical"
-        android:textSize="15sp" />
+        android:id="@+id/nmbHours"
+        android:gravity="center"
+        android:layout_below="@+id/textView1"
+        android:layout_toStartOf="@id/nmbMinutes"
+        android:layout_toLeftOf="@id/nmbMinutes"
+        />
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+    <NumberPicker
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:minHeight="?attr/actionBarSize"
-        android:background="@drawable/ab_transparent_democastoverlay"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+        android:layout_below="@+id/textView1"
+        android:layout_toRightOf="@+id/nmbMinutes"
+        android:id="@+id/nmbSeconds"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Seek"
+        android:id="@+id/btnSeek"
+        android:layout_below="@+id/nmbHours"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp" />
 
 </RelativeLayout>

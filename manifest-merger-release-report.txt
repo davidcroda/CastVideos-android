@@ -1,0 +1,177 @@
+-- Merging decision tree log ---
+manifest
+ADDED from AndroidManifest.xml:2:1
+	xmlns:android
+		ADDED from AndroidManifest.xml:2:11
+	package
+		ADDED from AndroidManifest.xml:3:5
+	android:versionName
+		ADDED from AndroidManifest.xml:5:5
+	android:versionCode
+		ADDED from AndroidManifest.xml:4:5
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
+uses-sdk
+ADDED from AndroidManifest.xml:7:5
+MERGED from com.github.amlcurran.showcaseview:ShowCaseLibrary::2:5
+MERGED from CastVideos-android:CastCompanionLibrary:unspecified:release:7:5
+MERGED from com.android.support:appcompat-v7:21.0.3:15:5
+MERGED from com.android.support:support-v4:21.0.3:15:5
+MERGED from com.android.support:mediarouter-v7:21.0.3:15:5
+MERGED from com.android.support:appcompat-v7:21.0.3:15:5
+MERGED from com.android.support:support-v4:21.0.3:15:5
+MERGED from com.google.android.gms:play-services-cast:6.5.87:18:5
+MERGED from com.google.android.gms:play-services-base:6.5.87:18:5
+MERGED from com.android.support:support-v4:21.0.3:15:5
+	android:targetSdkVersion
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
+	android:minSdkVersion
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
+uses-permission#android.permission.INTERNET
+ADDED from AndroidManifest.xml:9:5
+	android:name
+		ADDED from AndroidManifest.xml:9:22
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from AndroidManifest.xml:10:5
+	android:name
+		ADDED from AndroidManifest.xml:10:22
+uses-permission#android.permission.ACCESS_WIFI_STATE
+ADDED from AndroidManifest.xml:11:5
+	android:name
+		ADDED from AndroidManifest.xml:11:22
+uses-feature#android.hardware.wifi
+ADDED from AndroidManifest.xml:13:5
+	android:required
+		ADDED from AndroidManifest.xml:15:9
+	android:name
+		ADDED from AndroidManifest.xml:14:9
+application
+ADDED from AndroidManifest.xml:18:5
+MERGED from CastVideos-android:CastCompanionLibrary:unspecified:release:11:5
+MERGED from com.android.support:appcompat-v7:21.0.3:16:5
+MERGED from com.android.support:support-v4:21.0.3:16:5
+MERGED from com.android.support:mediarouter-v7:21.0.3:16:5
+MERGED from com.android.support:appcompat-v7:21.0.3:16:5
+MERGED from com.android.support:support-v4:21.0.3:16:5
+MERGED from com.google.android.gms:play-services-cast:6.5.87:19:5
+MERGED from com.google.android.gms:play-services-base:6.5.87:20:5
+MERGED from com.android.support:support-v4:21.0.3:16:5
+	android:label
+		ADDED from AndroidManifest.xml:22:9
+	android:allowBackup
+		ADDED from AndroidManifest.xml:20:9
+	android:icon
+		ADDED from AndroidManifest.xml:21:9
+	android:theme
+		ADDED from AndroidManifest.xml:23:9
+	android:name
+		ADDED from AndroidManifest.xml:19:9
+meta-data#com.google.android.gms.version
+ADDED from AndroidManifest.xml:24:9
+MERGED from com.google.android.gms:play-services-base:6.5.87:21:9
+	android:name
+		ADDED from AndroidManifest.xml:25:13
+	android:value
+		ADDED from AndroidManifest.xml:26:13
+activity#com.google.sample.cast.refplayer.VideoBrowserActivity
+ADDED from AndroidManifest.xml:28:9
+	android:screenOrientation
+		ADDED from AndroidManifest.xml:31:13
+	android:label
+		ADDED from AndroidManifest.xml:30:13
+	android:name
+		ADDED from AndroidManifest.xml:29:13
+intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
+ADDED from AndroidManifest.xml:32:13
+action#android.intent.action.MAIN
+ADDED from AndroidManifest.xml:33:17
+	android:name
+		ADDED from AndroidManifest.xml:33:25
+category#android.intent.category.LAUNCHER
+ADDED from AndroidManifest.xml:35:17
+	android:name
+		ADDED from AndroidManifest.xml:35:27
+activity#com.google.sample.cast.refplayer.mediaplayer.LocalPlayerActivity
+ADDED from AndroidManifest.xml:38:9
+	android:screenOrientation
+		ADDED from AndroidManifest.xml:42:13
+	android:label
+		ADDED from AndroidManifest.xml:41:13
+	android:configChanges
+		ADDED from AndroidManifest.xml:40:13
+	android:name
+		ADDED from AndroidManifest.xml:39:13
+	android:launchMode
+		ADDED from AndroidManifest.xml:43:13
+intent-filter#android.intent.action.MAIN
+ADDED from AndroidManifest.xml:44:13
+activity#com.google.sample.castcompanionlibrary.cast.player.VideoCastControllerActivity
+ADDED from AndroidManifest.xml:48:9
+	android:screenOrientation
+		ADDED from AndroidManifest.xml:53:13
+	android:label
+		ADDED from AndroidManifest.xml:50:13
+	android:parentActivityName
+		ADDED from AndroidManifest.xml:52:13
+	android:name
+		ADDED from AndroidManifest.xml:49:13
+	android:launchMode
+		ADDED from AndroidManifest.xml:51:13
+meta-data#android.support.PARENT_ACTIVITY
+ADDED from AndroidManifest.xml:54:13
+	android:name
+		ADDED from AndroidManifest.xml:55:17
+	android:value
+		ADDED from AndroidManifest.xml:56:17
+activity#com.google.sample.cast.refplayer.settings.CastPreference
+ADDED from AndroidManifest.xml:62:9
+	android:label
+		ADDED from AndroidManifest.xml:64:13
+	android:name
+		ADDED from AndroidManifest.xml:63:13
+activity#com.google.sample.castcompanionlibrary.cast.tracks.CaptionsPreferenceActivity
+ADDED from AndroidManifest.xml:69:9
+	android:label
+		ADDED from AndroidManifest.xml:71:13
+	android:name
+		ADDED from AndroidManifest.xml:70:13
+receiver#com.google.sample.castcompanionlibrary.remotecontrol.VideoIntentReceiver
+ADDED from AndroidManifest.xml:76:9
+	android:name
+		ADDED from AndroidManifest.xml:76:19
+intent-filter#android.intent.action.MEDIA_BUTTON+android.media.AUDIO_BECOMING_NOISY+com.google.sample.castcompanionlibrary.action.stop+com.google.sample.castcompanionlibrary.action.toggleplayback
+ADDED from AndroidManifest.xml:77:13
+action#android.media.AUDIO_BECOMING_NOISY
+ADDED from AndroidManifest.xml:78:17
+	android:name
+		ADDED from AndroidManifest.xml:78:25
+action#android.intent.action.MEDIA_BUTTON
+ADDED from AndroidManifest.xml:79:17
+	android:name
+		ADDED from AndroidManifest.xml:79:25
+action#com.google.sample.castcompanionlibrary.action.toggleplayback
+ADDED from AndroidManifest.xml:80:17
+	android:name
+		ADDED from AndroidManifest.xml:80:25
+action#com.google.sample.castcompanionlibrary.action.stop
+ADDED from AndroidManifest.xml:81:17
+	android:name
+		ADDED from AndroidManifest.xml:81:25
+service#com.google.sample.castcompanionlibrary.notification.VideoCastNotificationService
+ADDED from AndroidManifest.xml:85:9
+	android:exported
+		ADDED from AndroidManifest.xml:87:13
+	android:name
+		ADDED from AndroidManifest.xml:86:13
+intent-filter#com.google.sample.castcompanionlibrary.action.notificationvisibility+com.google.sample.castcompanionlibrary.action.stop+com.google.sample.castcompanionlibrary.action.toggleplayback
+ADDED from AndroidManifest.xml:88:13
+action#com.google.sample.castcompanionlibrary.action.notificationvisibility
+ADDED from AndroidManifest.xml:91:17
+	android:name
+		ADDED from AndroidManifest.xml:91:25
+service#com.google.sample.castcompanionlibrary.cast.reconnection.ReconnectionService
+ADDED from AndroidManifest.xml:95:9
+	android:name
+		ADDED from AndroidManifest.xml:95:18

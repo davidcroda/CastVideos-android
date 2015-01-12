@@ -21,7 +21,7 @@ android {
     buildToolsVersion "20.0.0"
 
     defaultConfig {
-        minSdkVersion 10
+        minSdkVersion 17
         targetSdkVersion 21
     }
 
@@ -35,7 +35,8 @@ android {
 
     lintOptions {
       abortOnError false
-  }
+    }
+
 }
 
 dependencies {
@@ -45,4 +46,5 @@ dependencies {
     releaseCompile project(path: ':CastCompanionLibrary', configuration: 'release')
     debugCompile project(path: ':CastCompanionLibrary', configuration: 'debug')
     compile 'com.github.amlcurran.showcaseview:ShowCaseLibrary@aar'
+    compile 'com.github.kevinsawicki:http-request:5.6'
 }

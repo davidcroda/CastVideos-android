@@ -62,7 +62,7 @@ public class VideoListAdapter extends ArrayAdapter<MediaInfo> {
         MediaMetadata mm = getItem(position).getMetadata();
 
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.browse_row, null);
+            convertView = inflater.inflate(R.layout.browse_row, parent, false);
             holder = new ViewHolder();
             holder.imgView = (ImageView) convertView.findViewById(R.id.imageView1);
             holder.titleView = (TextView) convertView.findViewById(R.id.textView1);

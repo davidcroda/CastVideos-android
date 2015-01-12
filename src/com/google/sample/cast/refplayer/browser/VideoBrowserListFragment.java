@@ -17,6 +17,7 @@
 package com.google.sample.cast.refplayer.browser;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -27,14 +28,18 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 
+import com.github.kevinsawicki.http.HttpRequest;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.sample.cast.refplayer.R;
 import com.google.sample.cast.refplayer.mediaplayer.LocalPlayerActivity;
 import com.google.sample.castcompanionlibrary.utils.Utils;
+
+import org.json.JSONException;
 
 import java.util.List;
 
@@ -177,21 +182,50 @@ public class VideoBrowserListFragment extends ListFragment implements
         super.onCreateContextMenu(menu, v, menuInfo);
     }
 
+    private class DeleteTask extends AsyncTask<MediaInfo, Integer, Integer> {
+
+        private MediaInfo selectedMedia;
+        @Override
+        protected Integer doInBackground(MediaInfo... media) {
+
+            selectedMedia = media[0];
+            MediaMetadata mm = selectedMedia.getMetadata();
+
+            String id = mm.getString(VideoProvider.KEY_ID);
+
+            String url = VideoProvider.BASE_URL + "/api/video/" + id;
+
+            Log.d(TAG, "Sending DELETE to url: " + url);
+
+            return HttpRequest.delete(url).header("x-token", VideoProvider.TOKEN).code();
+        }
+
+        protected void onPostExecute(Integer result) {
+            Log.d(TAG, "DELETE RESULT: " + Integer.toString(result));
+            if(result == 200) {
+                mAdapter.remove(selectedMedia);
+            }
+        }
+    }
+
     public boolean onContextItemSelected(MenuItem item) {
         super.onContextItemSelected(item);
 
-        MediaMetadata mm = mAdapter.getItem(item.getItemId()).getMetadata();
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
-        String id = mm.getString(VideoProvider.KEY_ID);
+        Log.d(TAG, "SELECTED " + Long.toString(info.id));
+        MediaInfo selectedMedia = mAdapter.getItem((int)info.id);
+
         String action = "";
 
         if(item.getItemId() == ID_PLAY) {
             action = "PLAY";
         } else if(item.getItemId() == ID_DELETE) {
             action = "DELETE";
+            new DeleteTask().execute(selectedMedia);
         }
 
-        Log.d(TAG, "Received Action: " + action + " for Video ID: " + id);
+        Log.d(TAG, "Received Action: " + action + " for Video ID: " + selectedMedia.getContentId());
 
         return true;
     }

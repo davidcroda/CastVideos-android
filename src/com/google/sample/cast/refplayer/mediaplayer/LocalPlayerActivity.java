@@ -28,6 +28,8 @@ import com.google.sample.castcompanionlibrary.cast.callbacks.VideoCastConsumerIm
 import com.google.sample.castcompanionlibrary.widgets.MiniController;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Point;
@@ -51,16 +53,22 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.androidquery.AQuery;
 
+import java.util.Formatter;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -69,7 +77,6 @@ public class LocalPlayerActivity extends ActionBarActivity {
     private static final String TAG = "LocalPlayerActivity";
     private VideoView mVideoView;
     private TextView mTitleView;
-    private TextView mDescriptionView;
     private TextView mStartText;
     private TextView mEndText;
     private SeekBar mSeekbar;
@@ -94,7 +101,10 @@ public class LocalPlayerActivity extends ActionBarActivity {
     private MiniController mMini;
     protected MediaInfo mRemoteMediaInformation;
     private VideoCastConsumerImpl mCastConsumer;
-    private TextView mAuthorView;
+    private NumberPicker nmbHours;
+    private NumberPicker nmbMinutes;
+    private NumberPicker nmbSeconds;
+    private Button btnSeek;
 
     /*
      * indicates whether we are doing a local or a remote playback
@@ -638,9 +648,9 @@ public class LocalPlayerActivity extends ActionBarActivity {
 
     private void updateMetadata(boolean visible) {
         if (!visible) {
-            mDescriptionView.setVisibility(View.GONE);
+
             mTitleView.setVisibility(View.GONE);
-            mAuthorView.setVisibility(View.GONE);
+
             mDisplaySize = Utils.getDisplaySize(this);
             RelativeLayout.LayoutParams lp = new
                     RelativeLayout.LayoutParams(mDisplaySize.x,
@@ -650,12 +660,10 @@ public class LocalPlayerActivity extends ActionBarActivity {
             mVideoView.invalidate();
         } else {
             MediaMetadata mm = mSelectedMedia.getMetadata();
-            mDescriptionView.setText(mm.getString(MediaMetadata.KEY_STUDIO));
+
             mTitleView.setText(mm.getString(MediaMetadata.KEY_TITLE));
-            mAuthorView.setText(mm.getString(MediaMetadata.KEY_SUBTITLE));
-            mDescriptionView.setVisibility(View.VISIBLE);
             mTitleView.setVisibility(View.VISIBLE);
-            mAuthorView.setVisibility(View.VISIBLE);
+
             mDisplaySize = Utils.getDisplaySize(this);
             RelativeLayout.LayoutParams lp = new
                     RelativeLayout.LayoutParams(mDisplaySize.x,
@@ -692,13 +700,54 @@ public class LocalPlayerActivity extends ActionBarActivity {
         setSupportActionBar(toolbar);
     }
 
+    private OnClickListener btnSeekClick() {
+        return new OnClickListener() {
+
+            /**
+             * Called when a view has been clicked.
+             *
+             * @param v The view that was clicked.
+             */
+            @Override
+            public void onClick(View v) {
+                int hours = nmbHours.getValue();
+                int minutes = nmbMinutes.getValue();
+                int seconds = nmbSeconds.getValue();
+
+                int milliseconds = (seconds + (60 * minutes) + (3600 * hours)) * 1000;
+
+                Formatter formatter = new Formatter(new StringBuilder(), Locale.US);
+
+                Toast toast = Toast.makeText(getApplicationContext(), formatter.format("Seeking to %s:%s:%s", hours, minutes, seconds).toString(), Toast.LENGTH_SHORT);
+                toast.show();
+
+                if (mPlaybackState == PlaybackState.PLAYING) {
+                    play(milliseconds);
+                } else if (mPlaybackState != PlaybackState.IDLE) {
+                    mVideoView.seekTo(milliseconds);
+                }
+                startControllersTimer();
+            }
+        };
+    }
+
+    private NumberPicker getNumberPicker(int id, int max) {
+        NumberPicker tmp = (NumberPicker) findViewById(id);
+
+        tmp.setMaxValue(max);
+        tmp.setMinValue(0);
+        tmp.setWrapSelectorWheel(true);
+
+        return tmp;
+    }
+
+
     private void loadViews() {
         mVideoView = (VideoView) findViewById(R.id.videoView1);
         mTitleView = (TextView) findViewById(R.id.textView1);
-        mDescriptionView = (TextView) findViewById(R.id.textView2);
-        mDescriptionView.setMovementMethod(new ScrollingMovementMethod());
-        mAuthorView = (TextView) findViewById(R.id.textView3);
+
         mStartText = (TextView) findViewById(R.id.startText);
+
         mEndText = (TextView) findViewById(R.id.endText);
         mSeekbar = (SeekBar) findViewById(R.id.seekBar1);
         // mVolBar = (SeekBar) findViewById(R.id.seekBar2);
@@ -708,5 +757,13 @@ public class LocalPlayerActivity extends ActionBarActivity {
         mControllers = findViewById(R.id.controllers);
         mContainer = findViewById(R.id.container);
         mCoverArt = (ImageView) findViewById(R.id.coverArtView);
+
+        nmbHours = this.getNumberPicker(R.id.nmbHours, 2);
+        nmbMinutes = this.getNumberPicker(R.id.nmbMinutes, 59);
+        nmbSeconds = this.getNumberPicker(R.id.nmbSeconds, 59);
+
+        btnSeek = (Button) findViewById(R.id.btnSeek);
+
+        btnSeek.setOnClickListener(this.btnSeekClick());
     }
 }

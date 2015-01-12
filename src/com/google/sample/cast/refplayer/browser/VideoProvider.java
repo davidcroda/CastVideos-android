@@ -59,15 +59,15 @@ public class VideoProvider {
     private static String TAG_TITLE = "title";
 
     private static String TAG_ID = "_id";
+
     private static String TAG_ACODEC = "acodec";
     private static String TAG_VCODEC = "vcodec";
     private static String TAG_DATE = "date";
     private static String TAG_WATCHED = "watched";
     private static String TAG_TRANSCODING = "transcoding";
 
-
-    public static String KEY_ID = "_id";
-    private static String TOKEN = "jdQO12KpRsqN2@^L";
+    public static String KEY_ID = "id";
+    public static String TOKEN = "jdQO12KpRsqN2@^L";
 
     private static List<MediaInfo> mediaList;
 
@@ -140,6 +140,8 @@ public class VideoProvider {
                 String imageurl = getThumbPrefix() + video.getString(TAG_THUMB);
                 String bigImageurl = getThumbPrefix() + video.getString(TAG_IMG_780_1200);
                 String title = video.getString(TAG_TITLE);
+                String id = video.getString(TAG_ID);
+
                 List<MediaTrack> tracks = null;
                 if (video.has(TAG_TRACKS)) {
                     JSONArray tracksArray = video.getJSONArray(TAG_TRACKS);
@@ -158,18 +160,18 @@ public class VideoProvider {
                     }
                 }
 
-                mediaList.add(buildMediaInfo(title, subTitle, videoUrl, imageurl,
+                mediaList.add(buildMediaInfo(id, title, subTitle, videoUrl, imageurl,
                         bigImageurl, tracks));
             }
         }
         return mediaList;
     }
 
-    private static MediaInfo buildMediaInfo(String title, String subTitle,
+    private static MediaInfo buildMediaInfo(String id, String title, String subTitle,
             String url, String imgUrl, String bigImageUrl, List<MediaTrack> tracks) {
         MediaMetadata movieMetadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
 
-        //movieMetadata.putString(KEY_ID, id);
+        movieMetadata.putString(KEY_ID, id);
         movieMetadata.putString(MediaMetadata.KEY_SUBTITLE, subTitle);
         movieMetadata.putString(MediaMetadata.KEY_TITLE, title);
 
