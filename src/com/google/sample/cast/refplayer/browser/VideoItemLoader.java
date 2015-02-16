@@ -28,9 +28,11 @@ public class VideoItemLoader extends AsyncTaskLoader<List<MediaInfo>> {
 
     private static final String TAG = "VideoItemLoader";
     private final String mUrl;
+    private Context context;
 
     public VideoItemLoader(Context context, String url) {
         super(context);
+        this.context = context;
         this.mUrl = url;
     }
 

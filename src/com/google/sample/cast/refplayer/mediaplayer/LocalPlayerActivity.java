@@ -16,11 +16,18 @@
 
 package com.google.sample.cast.refplayer.mediaplayer;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.cast.ApplicationMetadata;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.sample.cast.refplayer.CastApplication;
 import com.google.sample.cast.refplayer.R;
+import com.google.sample.cast.refplayer.api.ApiRequest;
+import com.google.sample.cast.refplayer.browser.VideoProvider;
 import com.google.sample.cast.refplayer.settings.CastPreference;
 import com.google.sample.cast.refplayer.utils.Utils;
 import com.google.sample.castcompanionlibrary.cast.VideoCastManager;
@@ -67,6 +74,9 @@ import android.widget.VideoView;
 
 import com.androidquery.AQuery;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Formatter;
 import java.util.Locale;
 import java.util.Timer;
@@ -105,6 +115,7 @@ public class LocalPlayerActivity extends ActionBarActivity {
     private NumberPicker nmbMinutes;
     private NumberPicker nmbSeconds;
     private Button btnSeek;
+    private RequestQueue queue;
 
     /*
      * indicates whether we are doing a local or a remote playback
@@ -126,6 +137,7 @@ public class LocalPlayerActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.player_activity);
         mAquery = new AQuery(this);
+        queue = Volley.newRequestQueue(this);
         loadViews();
         mCastManager = CastApplication.getCastManager();
         setupActionBar();
@@ -133,36 +145,61 @@ public class LocalPlayerActivity extends ActionBarActivity {
         setupMiniController();
         setupCastListener();
         // see what we need to play and were
-        Bundle b = getIntent().getExtras();
+        final Bundle b = getIntent().getExtras();
         if (null != b) {
             mSelectedMedia = com.google.sample.castcompanionlibrary.utils.Utils
                     .toMediaInfo(getIntent().getBundleExtra("media"));
             mShouldStartPlayback = b.getBoolean("shouldStart");
-            int startPosition = b.getInt("startPosition", 0);
-            mVideoView.setVideoURI(Uri.parse(mSelectedMedia.getContentId()));
-            Log.d(TAG, "Setting url of the VideoView to: " + mSelectedMedia.getContentId());
-            if (mShouldStartPlayback) {
-                // this will be the case only if we are coming from the
-                // CastControllerActivity by disconnecting from a device
-                mPlaybackState = PlaybackState.PLAYING;
-                updatePlaybackLocation(PlaybackLocation.LOCAL);
-                updatePlayButton(mPlaybackState);
-                if (startPosition > 0) {
-                    mVideoView.seekTo(startPosition);
+
+
+            String tokenUrl = VideoProvider.BASE_URL + "/api/token";
+            ApiRequest request = new ApiRequest(Request.Method.POST, tokenUrl, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    try {
+                        JSONObject token = new JSONObject(response);
+                        String authVideoUrl = mSelectedMedia.getContentId() + "?token=" + token;
+                        Log.d(TAG, authVideoUrl);
+
+                        int startPosition = b.getInt("startPosition", 0);
+                        mVideoView.setVideoURI(Uri.parse(authVideoUrl));
+                        Log.d(TAG, "Setting url of the VideoView to: " + authVideoUrl);
+                        if (mShouldStartPlayback) {
+                            // this will be the case only if we are coming from the
+                            // CastControllerActivity by disconnecting from a device
+                            mPlaybackState = PlaybackState.PLAYING;
+                            updatePlaybackLocation(PlaybackLocation.LOCAL);
+                            updatePlayButton(mPlaybackState);
+                            if (startPosition > 0) {
+                                mVideoView.seekTo(startPosition);
+                            }
+                            mVideoView.start();
+                            startControllersTimer();
+                        } else {
+                            // we should load the video but pause it
+                            // and show the album art.
+                            if (mCastManager.isConnected()) {
+                                updatePlaybackLocation(PlaybackLocation.REMOTE);
+                            } else {
+                                updatePlaybackLocation(PlaybackLocation.LOCAL);
+                            }
+                            mPlaybackState = PlaybackState.PAUSED;
+                            updatePlayButton(mPlaybackState);
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    Log.d(TAG, response);
                 }
-                mVideoView.start();
-                startControllersTimer();
-            } else {
-                // we should load the video but pause it
-                // and show the album art.
-                if (mCastManager.isConnected()) {
-                    updatePlaybackLocation(PlaybackLocation.REMOTE);
-                } else {
-                    updatePlaybackLocation(PlaybackLocation.LOCAL);
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(TAG, error.toString());
                 }
-                mPlaybackState = PlaybackState.PAUSED;
-                updatePlayButton(mPlaybackState);
-            }
+            });
+
+            queue.add(request);
         }
         if (null != mTitleView) {
             updateMetadata(true);

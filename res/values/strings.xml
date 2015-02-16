@@ -69,4 +69,5 @@
     <!-- Captions -->
     <string name="captions_settings">Captions Settings</string>
     <string name="captions">Captions</string>
+    <string name="settings_index">Index</string>
 </resources>

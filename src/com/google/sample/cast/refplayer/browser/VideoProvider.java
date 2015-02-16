@@ -16,11 +16,19 @@
 
 package com.google.sample.cast.refplayer.browser;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.MediaTrack;
 import com.google.android.gms.common.images.WebImage;
+import com.google.sample.cast.refplayer.VideoBrowserActivity;
+import com.google.sample.cast.refplayer.api.ApiRequest;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
@@ -43,9 +51,9 @@ public class VideoProvider {
     private static final String TAG_CATEGORIES = "categories";
     private static final String TAG_NAME = "name";
     private static String TAG_MEDIA = "video";
-    private static String TAG_SOURCES = "sources";
+    private static String TAG_SOURCE = "source";
     public static String BASE_URL =
-            "http://daveroda.com";
+            "http://192.168.0.103";
     private static String TAG_THUMB = "thumbnailSmall";
     private static String TAG_IMG_780_1200 = "thumbnailLarge";
     private static String TAG_SUBTITLE = "subtitle";
@@ -126,27 +134,17 @@ public class VideoProvider {
         if (null != videos) {
             for (int j = 0; j < videos.length(); j++) {
                 JSONObject video = videos.getJSONObject(j);
-                String subTitle = "";
-                try {
-                    subTitle = video.getString(TAG_SUBTITLE);
-                } catch (JSONException e) {
-                    //
-                }
-                JSONArray videoUrls = video.getJSONArray(TAG_SOURCES);
-                if (null == videoUrls || videoUrls.length() == 0) {
-                    continue;
-                }
-                String videoUrl = videoUrls.getString(0);
+                //String subTitle = video.getString(TAG_SUBTITLE);
                 String imageurl = getThumbPrefix() + video.getString(TAG_THUMB);
                 String bigImageurl = getThumbPrefix() + video.getString(TAG_IMG_780_1200);
                 String title = video.getString(TAG_TITLE);
                 String id = video.getString(TAG_ID);
+                String videoUrl = VideoProvider.BASE_URL + "/load/" + id;
 
-                List<MediaTrack> tracks = null;
+                List<MediaTrack> tracks = new ArrayList<MediaTrack>();
                 if (video.has(TAG_TRACKS)) {
                     JSONArray tracksArray = video.getJSONArray(TAG_TRACKS);
                     if (tracksArray != null) {
-                        tracks = new ArrayList<MediaTrack>();
                         for (int k = 0; k < tracksArray.length(); k++) {
                             JSONObject track = tracksArray.getJSONObject(k);
                             tracks.add(buildTrack(track.getLong(TAG_TRACK_ID),
@@ -160,7 +158,7 @@ public class VideoProvider {
                     }
                 }
 
-                mediaList.add(buildMediaInfo(id, title, subTitle, videoUrl, imageurl,
+                mediaList.add(buildMediaInfo(id, title, "", videoUrl, imageurl,
                         bigImageurl, tracks));
             }
         }

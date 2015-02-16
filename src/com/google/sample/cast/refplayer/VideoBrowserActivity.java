@@ -16,6 +16,15 @@
 
 package com.google.sample.cast.refplayer;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.sample.cast.refplayer.api.ApiRequest;
+import com.google.sample.cast.refplayer.browser.VideoProvider;
 import com.google.sample.cast.refplayer.settings.CastPreference;
 import com.google.sample.castcompanionlibrary.cast.VideoCastManager;
 import com.google.sample.castcompanionlibrary.cast.callbacks.IVideoCastConsumer;
@@ -49,6 +58,7 @@ public class VideoBrowserActivity extends ActionBarActivity {
     private MenuItem mediaRouteMenuItem;
     boolean mIsHoneyCombOrAbove = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
     private Toolbar mToolbar;
+    public RequestQueue queue;
 
     /*
      * (non-Javadoc)
@@ -59,6 +69,8 @@ public class VideoBrowserActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         VideoCastManager.checkGooglePlayServices(this);
         setContentView(R.layout.video_browser);
+
+        queue = Volley.newRequestQueue(this);
 
         mCastManager = CastApplication.getCastManager();
 
@@ -139,6 +151,21 @@ public class VideoBrowserActivity extends ActionBarActivity {
                 Intent i = new Intent(VideoBrowserActivity.this, CastPreference.class);
                 startActivity(i);
                 break;
+            case R.id.action_refresh:
+                String url = VideoProvider.BASE_URL + "/api/refresh";
+                ApiRequest request = new ApiRequest(Request.Method.GET, url, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, response);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, error.toString());
+                    }
+                });
+                queue.add(request);
+
         }
         return true;
     }
