@@ -172,7 +172,7 @@ public class VideoBrowserActivity extends ActionBarActivity {
                 break;
             case R.id.action_refresh:
                 String url = VideoProvider.BASE_URL + "/api/refresh";
-                ApiRequest request = new ApiRequest(Request.Method.GET, url, new Response.Listener<String>() {
+                ApiRequest request = new ApiRequest(Request.Method.GET, url, token, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.d(TAG, response);

@@ -20,12 +20,10 @@ public class LoginActivity extends ActionBarActivity {
 
     private SharedPreferences pref;
     private SharedPreferences.Editor prefEditor;
-    private WebView webView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
 
         Intent intent = getIntent();
 
@@ -46,10 +44,10 @@ public class LoginActivity extends ActionBarActivity {
 
         } else {
 
-            webView = (WebView)findViewById(R.id.webview);
-            webView.setWebChromeClient(new WebChromeClient());
-            webView.getSettings().setJavaScriptEnabled(true);
-            webView.loadUrl(VideoProvider.BASE_URL + "#/login?redirect=/oauth2");
+            String url = VideoProvider.BASE_URL + "#/login?redirect=/oauth2";
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
 
         }
     }
