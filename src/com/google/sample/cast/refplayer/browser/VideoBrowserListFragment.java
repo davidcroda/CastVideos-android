@@ -16,9 +16,12 @@
 
 package com.google.sample.cast.refplayer.browser;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -32,14 +35,18 @@ import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
 import com.github.kevinsawicki.http.HttpRequest;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.sample.cast.refplayer.R;
+import com.google.sample.cast.refplayer.api.ApiRequest;
 import com.google.sample.cast.refplayer.mediaplayer.LocalPlayerActivity;
 import com.google.sample.castcompanionlibrary.utils.Utils;
-
-import org.json.JSONException;
 
 import java.util.List;
 
@@ -48,7 +55,7 @@ import eu.erikw.PullToRefreshListView;
 public class VideoBrowserListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<List<MediaInfo>> {
 
-    private static final String TAG = "VideoBrowserListFragment";
+    private static final String TAG = "VideoBrowserList";
     private static final String CATALOG_URL =
             //"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/" +
     		VideoProvider.BASE_URL + "/api/video";
@@ -57,12 +64,22 @@ public class VideoBrowserListFragment extends ListFragment implements
     private VideoListAdapter mAdapter;
     private PullToRefreshListView mListView;
 
+    private SharedPreferences prefs;
+    private String token;
+
+    public RequestQueue queue;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup viewGroup = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
 
         View lvOld = viewGroup.findViewById(android.R.id.list);
+
+        queue = Volley.newRequestQueue(getActivity());
+        prefs = getActivity().getSharedPreferences("AUTH", Context.MODE_PRIVATE);
+
+        token = prefs.getString(VideoProvider.KEY_TOKEN,"");
 
         mListView = new PullToRefreshListView(getActivity());
         mListView.setId(android.R.id.list);
@@ -121,7 +138,7 @@ public class VideoBrowserListFragment extends ListFragment implements
      */
     @Override
     public Loader<List<MediaInfo>> onCreateLoader(int arg0, Bundle arg1) {
-        return new VideoItemLoader(getActivity(), CATALOG_URL);
+        return new VideoItemLoader(getActivity(), CATALOG_URL, this.token);
     }
 
     /*
@@ -197,7 +214,18 @@ public class VideoBrowserListFragment extends ListFragment implements
 
             Log.d(TAG, "Sending DELETE to url: " + url);
 
-            return HttpRequest.delete(url).header("x-token", VideoProvider.TOKEN).code();
+            queue.add(new ApiRequest(Request.Method.DELETE, url, token,new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.d("DELETE", response);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d("DELETE", error.toString());
+                }
+            }));
+            return 200;
         }
 
         protected void onPostExecute(Integer result) {

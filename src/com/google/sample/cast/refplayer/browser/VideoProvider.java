@@ -53,7 +53,8 @@ public class VideoProvider {
     private static String TAG_MEDIA = "video";
     private static String TAG_SOURCE = "source";
     public static String BASE_URL =
-            "http://192.168.0.103";
+            "https://daveroda.com";
+            //"http://192.168.0.103";
     private static String TAG_THUMB = "thumbnailSmall";
     private static String TAG_IMG_780_1200 = "thumbnailLarge";
     private static String TAG_SUBTITLE = "subtitle";
@@ -75,16 +76,16 @@ public class VideoProvider {
     private static String TAG_TRANSCODING = "transcoding";
 
     public static String KEY_ID = "id";
-    public static String TOKEN = "jdQO12KpRsqN2@^L";
+    public static final String KEY_TOKEN = "token";
 
     private static List<MediaInfo> mediaList;
 
-    protected JSONObject parseUrl(String urlString) {
+    protected JSONObject parseUrl(String urlString, String token) throws JSONException {
         InputStream is = null;
         try {
             java.net.URL url = new java.net.URL(urlString);
             URLConnection urlConnection = url.openConnection();
-            urlConnection.setRequestProperty("x-token", TOKEN);
+            urlConnection.setRequestProperty("x-token", token);
             is = new BufferedInputStream(urlConnection.getInputStream());
             BufferedReader reader = new BufferedReader(new InputStreamReader(
                     urlConnection.getInputStream(), "iso-8859-1"), 8);
@@ -110,25 +111,25 @@ public class VideoProvider {
         } catch (Exception e) {
             Log.d(TAG, "Failed to parse the json for media list");
             Log.d(TAG, e.getMessage());
-            return null;
+            throw new JSONException("Invalid json, likely not logged in");
         } finally {
             if (null != is) {
                 try {
                     is.close();
                 } catch (IOException e) {
-                    // 
+                    //
                 }
             }
         }
     }
 
-    public static List<MediaInfo> buildMedia(String url) throws JSONException {
+    public static List<MediaInfo> buildMedia(String url, String token) throws JSONException {
 
 //        if (null != mediaList) {
 //            return mediaList; //
 //        }
         mediaList = new ArrayList<MediaInfo>();
-        JSONObject jsonObj = new VideoProvider().parseUrl(url);
+        JSONObject jsonObj = new VideoProvider().parseUrl(url, token);
 
         JSONArray videos = jsonObj.getJSONArray(getJsonMediaTag());
         if (null != videos) {

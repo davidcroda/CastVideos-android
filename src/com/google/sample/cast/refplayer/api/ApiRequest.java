@@ -15,6 +15,9 @@ import java.util.Map;
  * Created by dave on 2/13/15.
  */
 public class ApiRequest extends StringRequest {
+
+    private String token = "";
+
     /**
      * Creates a new request with the given method.
      *
@@ -38,10 +41,15 @@ public class ApiRequest extends StringRequest {
         super(url, listener, errorListener);
     }
 
+    public ApiRequest(int method, String url, String token, Response.Listener<String> listener, Response.ErrorListener errorListener) {
+        super(method, url, listener, errorListener);
+        this.token = token;
+    }
+
     @Override
     public java.util.Map<String, String> getHeaders() throws AuthFailureError {
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put("x-token", VideoProvider.TOKEN);
+        headers.put("x-token", token);
         Log.d("DEBUG", headers.toString());
         return headers;
     }

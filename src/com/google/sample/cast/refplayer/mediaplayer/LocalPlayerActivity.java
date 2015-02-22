@@ -38,6 +38,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.media.MediaPlayer;
@@ -116,6 +117,8 @@ public class LocalPlayerActivity extends ActionBarActivity {
     private NumberPicker nmbSeconds;
     private Button btnSeek;
     private RequestQueue queue;
+    private String token;
+    private SharedPreferences prefs;
 
     /*
      * indicates whether we are doing a local or a remote playback
@@ -137,6 +140,10 @@ public class LocalPlayerActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.player_activity);
         mAquery = new AQuery(this);
+
+        prefs = getSharedPreferences("AUTH", MODE_PRIVATE);
+        token = prefs.getString(VideoProvider.KEY_TOKEN, "");
+
         queue = Volley.newRequestQueue(this);
         loadViews();
         mCastManager = CastApplication.getCastManager();
@@ -153,13 +160,21 @@ public class LocalPlayerActivity extends ActionBarActivity {
 
 
             String tokenUrl = VideoProvider.BASE_URL + "/api/token";
-            ApiRequest request = new ApiRequest(Request.Method.POST, tokenUrl, new Response.Listener<String>() {
+            ApiRequest request = new ApiRequest(Request.Method.POST, tokenUrl, token, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
                     try {
                         JSONObject token = new JSONObject(response);
-                        String authVideoUrl = mSelectedMedia.getContentId() + "?token=" + token;
-                        Log.d(TAG, authVideoUrl);
+                        String authVideoUrl = mSelectedMedia.getContentId() + "?token=" + token.getString("token");
+
+                        MediaInfo.Builder mediaBuilder = new MediaInfo.Builder(authVideoUrl)
+                                .setStreamType(mSelectedMedia.getStreamType())
+                                .setContentType(mSelectedMedia.getContentType())
+                                .setMetadata(mSelectedMedia.getMetadata())
+                                .setCustomData(mSelectedMedia.getCustomData())
+                                .setMediaTracks(mSelectedMedia.getMediaTracks());
+
+                        mSelectedMedia = mediaBuilder.build();
 
                         int startPosition = b.getInt("startPosition", 0);
                         mVideoView.setVideoURI(Uri.parse(authVideoUrl));

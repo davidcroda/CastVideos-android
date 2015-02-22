@@ -70,4 +70,8 @@
     <string name="captions_settings">Captions Settings</string>
     <string name="captions">Captions</string>
     <string name="settings_index">Index</string>
+    <string name="title_activity_login">Login</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_login">Login</string>
 </resources>

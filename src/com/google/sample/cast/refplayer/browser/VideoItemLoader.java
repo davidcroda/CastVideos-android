@@ -17,8 +17,11 @@
 package com.google.sample.cast.refplayer.browser;
 
 import com.google.android.gms.cast.MediaInfo;
+import com.google.sample.cast.refplayer.api.LoginActivity;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
@@ -29,20 +32,24 @@ public class VideoItemLoader extends AsyncTaskLoader<List<MediaInfo>> {
     private static final String TAG = "VideoItemLoader";
     private final String mUrl;
     private Context context;
+    private String token;
 
-    public VideoItemLoader(Context context, String url) {
+    public VideoItemLoader(Context context, String url, String token) {
         super(context);
         this.context = context;
         this.mUrl = url;
+        this.token = token;
     }
 
     @Override
     public List<MediaInfo> loadInBackground() {
         try {
-        	Log.i(TAG, "Fetching json from " + mUrl);
-            return VideoProvider.buildMedia(mUrl);
+        	Log.i(TAG, "Fetching json from " + mUrl + ", token: " + token);
+            return VideoProvider.buildMedia(mUrl, token);
         } catch (Exception e) {
             Log.e(TAG, "Failed to fetch media data", e);
+            Intent i = new Intent(this.context, LoginActivity.class);
+            this.context.startActivity(i);
             return null;
         }
     }

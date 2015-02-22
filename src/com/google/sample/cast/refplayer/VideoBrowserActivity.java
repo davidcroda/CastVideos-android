@@ -24,6 +24,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.sample.cast.refplayer.api.ApiRequest;
+import com.google.sample.cast.refplayer.api.LoginActivity;
 import com.google.sample.cast.refplayer.browser.VideoProvider;
 import com.google.sample.cast.refplayer.settings.CastPreference;
 import com.google.sample.castcompanionlibrary.cast.VideoCastManager;
@@ -33,9 +34,11 @@ import com.google.sample.castcompanionlibrary.widgets.MiniController;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.MediaRouteButton;
 import android.support.v7.media.MediaRouter.RouteInfo;
@@ -59,6 +62,7 @@ public class VideoBrowserActivity extends ActionBarActivity {
     boolean mIsHoneyCombOrAbove = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
     private Toolbar mToolbar;
     public RequestQueue queue;
+    private String token;
 
     /*
      * (non-Javadoc)
@@ -69,6 +73,17 @@ public class VideoBrowserActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         VideoCastManager.checkGooglePlayServices(this);
         setContentView(R.layout.video_browser);
+
+        SharedPreferences prefs = getSharedPreferences("AUTH",MODE_PRIVATE);
+
+        this.token = prefs.getString(VideoProvider.KEY_TOKEN, "");
+
+        if(token.equals("")) {
+            Log.e("TOKEN", "Token preference empty: " + token);
+            Intent loginIntent = new Intent(this, LoginActivity.class);
+            startActivity(loginIntent);
+        }
+
 
         queue = Volley.newRequestQueue(this);
 
@@ -150,6 +165,10 @@ public class VideoBrowserActivity extends ActionBarActivity {
             case R.id.action_settings:
                 Intent i = new Intent(VideoBrowserActivity.this, CastPreference.class);
                 startActivity(i);
+                break;
+            case R.id.action_login:
+                Intent loginIntent = new Intent(this, LoginActivity.class);
+                startActivity(loginIntent);
                 break;
             case R.id.action_refresh:
                 String url = VideoProvider.BASE_URL + "/api/refresh";
